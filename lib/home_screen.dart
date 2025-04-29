@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_app/add_transaction_screen.dart';
-import 'package:flutter_test_app/transaction.dart';
-import 'package:flutter_test_app/database_helper.dart';
+import 'package:flutter_budget_app/add_transaction_screen.dart';
+import 'package:flutter_budget_app/transaction.dart';
+import 'package:flutter_budget_app/database_helper.dart';
+import 'package:intl/intl.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -73,8 +74,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildMonthlyOverview() {
-    double totalIncome = _transactions.where((t) => t.type == 'Income').fold(0, (sum, t) => sum + t.amount);
-    double totalExpense = _transactions.where((t) => t.type == 'Expense').fold(0, (sum, t) => sum + t.amount);
+    DateTime now = DateTime.now();
+    String currentMonth = DateFormat('MMMM yyyy').format(now);
+    List<Transaction> monthlyTransactions = _transactions.where((t) {
+      return t.date.year == now.year && t.date.month == now.month;
+    }).toList();
+
+    double totalIncome = monthlyTransactions.where((t) => t.type == 'Income').fold(0, (sum, t) => sum + t.amount);
+    double totalExpense = monthlyTransactions.where((t) => t.type == 'Expense').fold(0, (sum, t) => sum + t.amount);
     double net = totalIncome - totalExpense;
 
     return Card(
@@ -83,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            Text('Monthly Overview', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text('Monthly Overview for $currentMonth', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             SizedBox(height: 8),
             Text('Income: $totalIncome'),
             Text('Expense: $totalExpense'),

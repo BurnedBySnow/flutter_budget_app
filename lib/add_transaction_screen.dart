@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_app/transaction.dart';
+import 'package:flutter_budget_app/transaction.dart';
 
 class AddTransactionScreen extends StatefulWidget {
   @override
-  _AddTransactionScreenState createState() => _AddTransactionScreenState();
+  State<AddTransactionScreen> createState() => _AddTransactionScreenState();
 }
 
 class _AddTransactionScreenState extends State<AddTransactionScreen> {
