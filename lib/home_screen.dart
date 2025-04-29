@@ -29,7 +29,32 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _addTransaction(Transaction transaction) async {
     await _dbHelper.insert(transaction.toMap());
+    if (transaction.recurrence != null) {
+      _createRecurringTransaction(transaction);
+    }
     _loadTransactions();
+  }
+
+  void _createRecurringTransaction(Transaction transaction) async {
+    DateTime nextDate = transaction.date;
+    switch (transaction.recurrence) {
+      case 'Daily':
+        nextDate = nextDate.add(Duration(days: 1));
+      case 'Weekly':
+        nextDate = nextDate.add(Duration(days: 7));
+      case 'Monthly':
+        nextDate = nextDate.add(Duration(days: 7));
+      default:
+        return;
+    }
+
+    Transaction recurringTransaction = Transaction(
+      type: transaction.type,
+      amount: transaction.amount,
+      category: transaction.category,
+      date: nextDate,
+      recurrence: transaction.recurrence,
+    );
   }
 
   @override

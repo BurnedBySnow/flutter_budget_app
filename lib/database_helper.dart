@@ -4,6 +4,7 @@ import 'package:path/path.dart';
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._instance();
   static Database? _db;
+  static const int _version = 2;
 
   DatabaseHelper._instance();
 
@@ -13,6 +14,7 @@ class DatabaseHelper {
   String colAmount = 'amount';
   String colDate = 'date';
   String colCategory = 'category';
+  String colRecurrence = 'recurrence';
 
   Future<Database?> get db async {
     // if (_db == null) {
@@ -24,7 +26,7 @@ class DatabaseHelper {
 
   Future<Database> _initDb() async {
     String path = join(await getDatabasesPath(), 'budget.db');
-    Database db = await openDatabase(path, version: 1, onCreate: _onCreate);
+    Database db = await openDatabase(path, version: _version, onCreate: _onCreate, onUpgrade: _onUpgrade);
     return db;
   }
 
@@ -36,8 +38,18 @@ class DatabaseHelper {
         $colAmount REAL,
         $colDate TEXT,
         $colCategory TEXT
+        $colRecurrence TEXT
       )
     ''');
+  }
+
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < newVersion) {
+      await db.execute('''
+        ALTER TABLE $transactionTable
+        ADD COLUMN $colRecurrence TEXT
+      ''');
+    }
   }
 
   Future<int> insert(Map<String, dynamic> row) async {

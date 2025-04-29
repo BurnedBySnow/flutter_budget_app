@@ -12,6 +12,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   double _amount = 0.0;
   String _category = '';
   DateTime _date = DateTime.now();
+  String? _recurrence;
 
   @override
   Widget build(BuildContext context) {
@@ -64,6 +65,18 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                 onSaved: (value) {
                   _category = value!;
                 },
+              ),
+              DropdownButtonFormField<String>(
+              value: _recurrence, 
+              onChanged: (value) {
+                setState(() {
+                  _recurrence = value;
+                });
+              },
+              items: ['None', 'Daily', 'Weekly', 'Monthly'].map((recurrence) {
+                return DropdownMenuItem(value: recurrence, child: Text(recurrence),);
+              }).toList(),
+              decoration: InputDecoration(labelText: 'Recurrence'),
               ),
               SizedBox(height: 16),
               ElevatedButton(

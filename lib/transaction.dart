@@ -4,6 +4,7 @@ class Transaction {
   double amount;
   String category;
   DateTime date;
+  String? recurrence;
 
   Transaction({
     this.id,
@@ -11,6 +12,7 @@ class Transaction {
     required this.amount,
     required this.category,
     required this.date,
+    this.recurrence,
   });
 
   Map<String, dynamic> toMap() {
@@ -20,6 +22,7 @@ class Transaction {
       'amount': amount,
       'category': category,
       'date': date.toIso8601String(),
+      'recurrence': recurrence
     };
   }
 
@@ -30,6 +33,7 @@ class Transaction {
       amount: map['amount'],
       category: map['category'],
       date: DateTime.parse(map['date']),
+      recurrence: map['recurrence'],
     );
   }
 }
