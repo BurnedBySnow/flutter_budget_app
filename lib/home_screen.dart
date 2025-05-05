@@ -134,7 +134,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
-      body: <Widget>[Column(
+      body: <Widget>[
+        Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildMonthlyOverview(),
@@ -174,6 +175,9 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
+      Center(
+          child: Text('Graph here!'),
+        ),
       ][_selectedIndex],
       floatingActionButton: FloatingActionButton(
         backgroundColor: colorScheme.secondary,
