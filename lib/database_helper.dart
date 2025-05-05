@@ -61,5 +61,10 @@ class DatabaseHelper {
     Database? db = await this.db;
     return await db!.query(transactionTable);
   }
+
+  Future<void> deleteTransaction(int id) async {
+    Database? db = await this.db;
+    await db!.delete(transactionTable, where: '$colId = ?', whereArgs: [id]);
+  }
 }
 

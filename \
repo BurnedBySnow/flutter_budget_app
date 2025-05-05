@@ -1,6 +1,8 @@
+import 'dart:nativewrappers/_internal/vm/lib/mirrors_patch.dart';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_budget_app/add_transaction_screen.dart';
+import 'package:flutter_budget_app/gruvbox_colors.dart';
 import 'package:flutter_budget_app/transaction.dart';
 import 'package:flutter_budget_app/database_helper.dart';
 import 'package:intl/intl.dart';
@@ -13,8 +15,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
   List<Transaction> _transactions = [];
-  int _selectedIndex = 0;
-  List<String> _destinations = ['Home', 'Graphs'];
 
   @override
   void initState() {
@@ -95,56 +95,16 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(systemNavigationBarColor: Color(0xFF32302f)),
-    );
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          _destinations[_selectedIndex],
+          'Budget App',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border(top: BorderSide(color: Color(0xFF3c3836))),
-          boxShadow: [BoxShadow(color: Colors.white)],
-        ),
-        child: NavigationBar(
-          backgroundColor: Color(0xFF32302f),
-          onDestinationSelected: (int index) {
-            setState(() {
-              _selectedIndex = index;
-            });
-          },
-          indicatorColor: colorScheme.secondary,
-          selectedIndex: _selectedIndex,
-          destinations: <Widget>[
-            NavigationDestination(
-              selectedIcon: Icon(Icons.home),
-              icon: Icon(Icons.home),
-              label: _destinations[0],
-            ),
-            NavigationDestination(
-              selectedIcon: Icon(Icons.bar_chart),
-              icon: Icon(Icons.bar_chart),
-              label: _destinations[1],
-            ),
-          ],
-        ),
-      ),
-      body: <Widget>[Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      body: Column(
         children: [
           _buildMonthlyOverview(),
-          Padding(
-            padding: EdgeInsets.only(left: 16.0, top: 16.0),
-            child: Text(
-              "Recent",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
-            ),
-          ),
           Expanded(
             child: ListView.builder(
               itemCount: _transactions.length,
@@ -174,9 +134,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      ][_selectedIndex],
       floatingActionButton: FloatingActionButton(
-        backgroundColor: colorScheme.secondary,
+        backgroundColor: Colors.black45,
         onPressed: () async {
           final transaction = await Navigator.push(
             context,
@@ -207,26 +166,22 @@ class _HomeScreenState extends State<HomeScreen> {
         .fold(0, (sum, t) => sum + t.amount);
     double net = totalIncome - totalExpense;
 
-    return SizedBox(
-      width: double.infinity,
+    return Center(
       child: Card(
         color: Color(0xFF32302f),
-        margin: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+        margin: EdgeInsets.symmetric(vertical: 16.0),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
               Text(
                 'Monthly Overview for $currentMonth',
-                style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 8.0),
-              Text('Income: $totalIncome', style: TextStyle(fontSize: 16.0)),
-              Text('Expense: $totalExpense', style: TextStyle(fontSize: 16.0)),
-              Text(
-                'Net: $net',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
-              ),
+              SizedBox(height: 8),
+              Text('Income: $totalIncome'),
+              Text('Expense: $totalExpense'),
+              Text('Net: $net', style: TextStyle(fontWeight: FontWeight.bold)),
             ],
           ),
         ),

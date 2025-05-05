@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_budget_app/gruvbox_colors.dart';
 import 'package:flutter_budget_app/home_screen.dart';
 
 void main() {
@@ -14,7 +15,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromRGBO(142, 192, 124, 1)),
+        colorScheme: gruvboxColorScheme,
       ),
       home: HomeScreen(),
     );
