@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_budget_app/add_transaction_screen.dart';
+import 'package:flutter_budget_app/graph_screen.dart';
+import 'package:flutter_budget_app/gruvbox_colors.dart';
 import 'package:flutter_budget_app/transaction.dart';
 import 'package:flutter_budget_app/database_helper.dart';
 import 'package:intl/intl.dart';
@@ -164,8 +166,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       style: TextStyle(
                         color:
                             _transactions[index].type == 'Expense'
-                                ? Colors.red
-                                : Colors.green,
+                                ? gruvboxColorScheme.error
+                                : gruvboxColorScheme.secondary,
                       ),
                     ),
                   ),
@@ -175,9 +177,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      Center(
-          child: Text('Graph here!'),
-        ),
+      GraphScreen(),
       ][_selectedIndex],
       floatingActionButton: FloatingActionButton(
         backgroundColor: colorScheme.secondary,
@@ -225,8 +225,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 8.0),
-              Text('Income: $totalIncome', style: TextStyle(fontSize: 16.0)),
-              Text('Expense: $totalExpense', style: TextStyle(fontSize: 16.0)),
+              Text('Income: $totalIncome', style: TextStyle(fontSize: 16.0, color: gruvboxColorScheme.secondary)),
+              Text('Expense: $totalExpense', style: TextStyle(fontSize: 16.0, color: gruvboxColorScheme.error)),
               Text(
                 'Net: $net',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),

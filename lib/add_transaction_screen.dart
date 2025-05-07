@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_budget_app/gruvbox_colors.dart';
 import 'package:flutter_budget_app/transaction.dart';
 
 class AddTransactionScreen extends StatefulWidget {
@@ -17,9 +18,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Add Transaction'),
-      ),
+      appBar: AppBar(title: Text('Add Transaction')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -33,12 +32,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     _type = value!;
                   });
                 },
-                items: ['Income', 'Expense'].map((type) {
-                  return DropdownMenuItem(
-                    value: type,
-                    child: Text(type),
-                  );
-                }).toList(),
+                items:
+                    ['Income', 'Expense'].map((type) {
+                      return DropdownMenuItem(value: type, child: Text(type));
+                    }).toList(),
                 decoration: InputDecoration(labelText: 'Type'),
               ),
               TextFormField(
@@ -67,19 +64,28 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                 },
               ),
               DropdownButtonFormField<String>(
-              value: _recurrence, 
-              onChanged: (value) {
-                setState(() {
-                  _recurrence = value;
-                });
-              },
-              items: ['None', 'Daily', 'Weekly', 'Monthly'].map((recurrence) {
-                return DropdownMenuItem(value: recurrence, child: Text(recurrence),);
-              }).toList(),
-              decoration: InputDecoration(labelText: 'Recurrence'),
+                value: _recurrence,
+                onChanged: (value) {
+                  setState(() {
+                    _recurrence = value;
+                  });
+                },
+                items:
+                    ['None', 'Daily', 'Weekly', 'Monthly'].map((recurrence) {
+                      return DropdownMenuItem(
+                        value: recurrence,
+                        child: Text(recurrence),
+                      );
+                    }).toList(),
+                decoration: InputDecoration(labelText: 'Recurrence'),
               ),
               SizedBox(height: 16),
               ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: WidgetStatePropertyAll<Color>(
+                    gruvboxColorScheme.secondary,
+                  ),
+                ),
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
@@ -88,13 +94,19 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                       Transaction(
                         type: _type,
                         amount: _amount,
-                        category: _category,
+                        category: _category.toLowerCase(),
                         date: _date,
                       ),
                     );
                   }
                 },
-                child: Text('Save'),
+                child: Text(
+                  'Save',
+                  style: TextStyle(
+                    color: gruvboxColorScheme.surface,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ],
           ),
@@ -103,4 +115,3 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     );
   }
 }
-
