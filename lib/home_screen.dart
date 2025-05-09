@@ -16,7 +16,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
   List<Transaction> _transactions = [];
   int _selectedIndex = 0;
-  List<String> _destinations = ['Home', 'Graphs'];
+  List<String> _destinations = ['Home', 'Graphs', 'Add'];
 
   @override
   void initState() {
@@ -115,10 +115,23 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         child: NavigationBar(
           backgroundColor: Color(0xFF32302f),
-          onDestinationSelected: (int index) {
-            setState(() {
-              _selectedIndex = index;
-            });
+          onDestinationSelected: (int index) async {
+            if (index == 2) {
+              final transaction = await Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AddTransactionScreen()),
+              );
+              if (transaction != null) {
+                _addTransaction(transaction);
+              }
+              setState(() {
+                _selectedIndex = 0;
+              });
+            } else {
+              setState(() {
+                _selectedIndex = index;
+              });
+            }
           },
           indicatorColor: colorScheme.secondary,
           selectedIndex: _selectedIndex,
@@ -133,65 +146,82 @@ class _HomeScreenState extends State<HomeScreen> {
               icon: Icon(Icons.bar_chart),
               label: _destinations[1],
             ),
+            NavigationDestination(icon: Icon(Icons.add), label: "Add"),
           ],
         ),
       ),
-      body: <Widget>[
-        Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildMonthlyOverview(),
-          Padding(
-            padding: EdgeInsets.only(left: 16.0, top: 16.0),
-            child: Text(
-              "Recent",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
-            ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: _transactions.length,
-              itemBuilder: (context, index) {
-                return Dismissible(
-                  key: Key(_transactions[index].id.toString()),
-                  background: Container(color: Colors.red),
-                  direction: DismissDirection.startToEnd,
-                  onDismissed: (direction) {
-                    _removeTransaction(_transactions[index]);
-                  },
-                  child: ListTile(
-                    title: Text(_transactions[index].category),
-                    subtitle: Text(
-                      '${_transactions[index].amount}',
-                      style: TextStyle(
-                        color:
-                            _transactions[index].type == 'Expense'
-                                ? gruvboxColorScheme.error
-                                : gruvboxColorScheme.secondary,
-                      ),
+      body:
+          <Widget>[
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildMonthlyOverview(),
+                Padding(
+                  padding: EdgeInsets.only(left: 16.0, top: 16.0, bottom: 16.0),
+                  child: Text(
+                    "Recent",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20.0,
                     ),
                   ),
-                );
-              },
+                ),
+                Expanded(
+                  child: ListView.separated(
+                    itemCount: _transactions.length,
+                    itemBuilder: (context, index) {
+                      return Dismissible(
+                        key: Key(_transactions[index].id.toString()),
+                        background: Container(color: gruvboxColorScheme.error),
+                        direction: DismissDirection.startToEnd,
+                        onDismissed: (direction) {
+                          _removeTransaction(_transactions[index]);
+                        },
+                        child: ListTile(
+                          title: Text(_transactions[index].category),
+                          subtitle: Text(
+                            '${_transactions[index].amount}',
+                            style: TextStyle(
+                              color:
+                                  _transactions[index].type == 'Expense'
+                                      ? gruvboxColorScheme.error
+                                      : gruvboxColorScheme.secondary,
+                            ),
+                          ),
+                          trailing: Text(
+                            DateFormat(
+                              'MMMM d',
+                            ).format(_transactions[index].date),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                    separatorBuilder:
+                        (BuildContext context, int index) =>
+                            const Divider(color: Color(0xFF32302f), height: 2),
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
-      GraphScreen(),
-      ][_selectedIndex],
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: colorScheme.secondary,
-        onPressed: () async {
-          final transaction = await Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => AddTransactionScreen()),
-          );
-          if (transaction != null) {
-            _addTransaction(transaction);
-          }
-        },
-        child: Icon(Icons.add),
-      ),
+            GraphScreen(),
+          ][_selectedIndex],
+      // floatingActionButton: FloatingActionButton(
+      //   backgroundColor: colorScheme.secondary,
+      //   onPressed: () async {
+      //     final transaction = await Navigator.push(
+      //       context,
+      //       MaterialPageRoute(builder: (context) => AddTransactionScreen()),
+      //     );
+      //     if (transaction != null) {
+      //       _addTransaction(transaction);
+      //     }
+      //   },
+      //   child: Icon(Icons.add),
+      // ),
     );
   }
 
@@ -225,8 +255,20 @@ class _HomeScreenState extends State<HomeScreen> {
                 style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 8.0),
-              Text('Income: $totalIncome', style: TextStyle(fontSize: 16.0, color: gruvboxColorScheme.secondary)),
-              Text('Expense: $totalExpense', style: TextStyle(fontSize: 16.0, color: gruvboxColorScheme.error)),
+              Text(
+                'Income: $totalIncome',
+                style: TextStyle(
+                  fontSize: 16.0,
+                  color: gruvboxColorScheme.secondary,
+                ),
+              ),
+              Text(
+                'Expense: $totalExpense',
+                style: TextStyle(
+                  fontSize: 16.0,
+                  color: gruvboxColorScheme.error,
+                ),
+              ),
               Text(
                 'Net: $net',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),

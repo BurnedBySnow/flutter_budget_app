@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_budget_app/bar_chart_widget.dart';
 import 'package:flutter_budget_app/database_helper.dart';
 import 'package:flutter_budget_app/transaction.dart';
