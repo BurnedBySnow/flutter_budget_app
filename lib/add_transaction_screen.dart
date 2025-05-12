@@ -3,6 +3,10 @@ import 'package:flutter_budget_app/gruvbox_colors.dart';
 import 'package:flutter_budget_app/transaction.dart';
 
 class AddTransactionScreen extends StatefulWidget {
+  final Transaction? transaction;
+
+  AddTransactionScreen({this.transaction});
+
   @override
   State<AddTransactionScreen> createState() => _AddTransactionScreenState();
 }
@@ -16,9 +20,26 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   String? _recurrence;
 
   @override
+  void initState() {
+    super.initState();
+    debugPrint((widget.transaction != null).toString());
+    if (widget.transaction != null) {
+      _type = widget.transaction!.type;
+      _amount = widget.transaction!.amount;
+      _category = widget.transaction!.category;
+      _date = widget.transaction!.date;
+      _recurrence = widget.transaction!.recurrence ?? 'None';
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Add Transaction')),
+      appBar: AppBar(
+        title: Text(
+          widget.transaction == null ? 'Add Transaction' : 'Update Transaction',
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -40,6 +61,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               ),
               TextFormField(
                 keyboardType: TextInputType.number,
+                initialValue: widget.transaction != null ? _amount.toString() : null,
                 decoration: InputDecoration(labelText: 'Amount'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -52,6 +74,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                 },
               ),
               TextFormField(
+                initialValue: _category,
                 decoration: InputDecoration(labelText: 'Category'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -89,19 +112,19 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
-                    Navigator.pop(
-                      context,
-                      Transaction(
-                        type: _type,
-                        amount: _amount,
-                        category: _category.toLowerCase(),
-                        date: _date,
-                      ),
+                    Transaction transaction = Transaction(
+                      id: widget.transaction?.id,
+                      type: _type,
+                      amount: _amount,
+                      category: _category,
+                      date: _date,
+                      recurrence: _recurrence == 'None' ? null : _recurrence,
                     );
+                    Navigator.pop(context, transaction);
                   }
                 },
                 child: Text(
-                  'Save',
+                  widget.transaction == null ? 'Add' : 'Update',
                   style: TextStyle(
                     color: gruvboxColorScheme.surface,
                     fontWeight: FontWeight.bold,

@@ -94,6 +94,45 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  void _updateTransaction(Transaction transaction) async {
+    final updatedTransaction = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddTransactionScreen(transaction: transaction),
+      ),
+    );
+
+    if (updatedTransaction != null) {
+      await _dbHelper.updateTransaction(updatedTransaction);
+      if (transaction.recurrence != null) {
+        _updateRecurringTransactions(transaction, updatedTransaction);
+      }
+      _loadTransactions();
+    }
+  }
+
+  void _updateRecurringTransactions(Transaction oldTransaction, Transaction newTransaction) async {
+    List<Transaction> allTransactions = _transactions.where((t) =>
+        t.type == oldTransaction.type &&
+        t.amount == oldTransaction.amount &&
+        t.category == oldTransaction.category &&
+        t.recurrence == oldTransaction.recurrence &&
+        t.date.isAfter(oldTransaction.date)
+    ).toList();
+
+    for (var t in allTransactions) {
+      Transaction updatedTransaction = Transaction(
+        id: t.id,
+        type: newTransaction.type,
+        amount: newTransaction.amount,
+        category: newTransaction.category,
+        date: t.date,
+        recurrence: newTransaction.recurrence,
+      );
+      await _dbHelper.updateTransaction(updatedTransaction);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
@@ -176,11 +215,38 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: gruvboxColorScheme.error,
                           alignment: Alignment.centerLeft,
                           child: const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
-                            child: Text('Delete', textAlign: TextAlign.left, style: TextStyle(color: Color(0xFF32302f),  fontWeight: FontWeight.bold),),
+                            padding: EdgeInsets.symmetric(
+                              vertical: 20,
+                              horizontal: 10,
+                            ),
+                            child: Text(
+                              'Delete',
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                color: Color(0xFF32302f),
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
                         ),
-                        direction: DismissDirection.startToEnd,
+                        secondaryBackground: Container(
+                          color: gruvboxColorScheme.secondary,
+                          alignment: Alignment.centerRight,
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(
+                              vertical: 20,
+                              horizontal: 10,
+                            ),
+                            child: Text(
+                              'Edit',
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                color: Color(0xFF32302f),
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
                         confirmDismiss: (DismissDirection direction) async {
                           if (direction == DismissDirection.startToEnd) {
                             return await showDialog(
@@ -209,6 +275,11 @@ class _HomeScreenState extends State<HomeScreen> {
                               },
                             );
                           }
+                          if (direction == DismissDirection.endToStart) {
+                            _updateTransaction(_transactions[index]);
+                            return false;
+                          }
+                          return false;
                         },
                         onDismissed: (direction) {
                           _removeTransaction(_transactions[index]);

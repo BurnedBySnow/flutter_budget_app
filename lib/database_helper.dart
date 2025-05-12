@@ -1,3 +1,5 @@
+import 'dart:math';
+import 'package:flutter_budget_app/transaction.dart' as TM;
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -62,6 +64,16 @@ class DatabaseHelper {
   Future<void> deleteTransaction(int id) async {
     Database? db = await this.db;
     await db!.delete(transactionTable, where: '$colId = ?', whereArgs: [id]);
+  }
+
+  Future<int> updateTransaction(TM.Transaction transaction) async {
+    Database? db = await this.db;
+    return await db!.update(
+      transactionTable,
+      transaction.toMap(),
+      where: '$colId = ?',
+      whereArgs: [transaction.id],
+    );
   }
 }
 
