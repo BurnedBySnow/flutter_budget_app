@@ -58,7 +58,7 @@ class DatabaseHelper {
 
   Future<List<Map<String, dynamic>>> queryAll() async {
     Database? db = await this.db;
-    return await db!.query(transactionTable);
+    return await db!.query(transactionTable, where: '$colDate < ?', whereArgs: [DateTime.now().add(const Duration(days: 1)).toString()]);
   }
 
   Future<void> deleteTransaction(int id) async {
