@@ -172,8 +172,44 @@ class _HomeScreenState extends State<HomeScreen> {
                     itemBuilder: (context, index) {
                       return Dismissible(
                         key: Key(_transactions[index].id.toString()),
-                        background: Container(color: gruvboxColorScheme.error),
+                        background: Container(
+                          color: gruvboxColorScheme.error,
+                          alignment: Alignment.centerLeft,
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+                            child: Text('Delete', textAlign: TextAlign.left, style: TextStyle(color: Color(0xFF32302f),  fontWeight: FontWeight.bold),),
+                          ),
+                        ),
                         direction: DismissDirection.startToEnd,
+                        confirmDismiss: (DismissDirection direction) async {
+                          if (direction == DismissDirection.startToEnd) {
+                            return await showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  backgroundColor: Color(0xFF32302f),
+                                  title: const Text('Delete'),
+                                  content: const Text(
+                                    'Are you sure you want to delete this transaction ?',
+                                  ),
+                                  actions: <Widget>[
+                                    ElevatedButton(
+                                      onPressed:
+                                          () => Navigator.of(context).pop(true),
+                                      child: const Text('Yes'),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed:
+                                          () =>
+                                              Navigator.of(context).pop(false),
+                                      child: const Text('No'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          }
+                        },
                         onDismissed: (direction) {
                           _removeTransaction(_transactions[index]);
                         },
@@ -209,19 +245,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             GraphScreen(),
           ][_selectedIndex],
-      // floatingActionButton: FloatingActionButton(
-      //   backgroundColor: colorScheme.secondary,
-      //   onPressed: () async {
-      //     final transaction = await Navigator.push(
-      //       context,
-      //       MaterialPageRoute(builder: (context) => AddTransactionScreen()),
-      //     );
-      //     if (transaction != null) {
-      //       _addTransaction(transaction);
-      //     }
-      //   },
-      //   child: Icon(Icons.add),
-      // ),
     );
   }
 

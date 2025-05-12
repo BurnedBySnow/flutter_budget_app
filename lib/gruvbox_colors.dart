@@ -9,5 +9,6 @@ final ColorScheme gruvboxColorScheme = ColorScheme(
   onSecondary: Color(0xFF252423), // Text color on secondary background
   onSurface: Color(0xFFd4be98), // Text color on surface background
   onError: Color(0xFF252434), // Text color on error background
+  errorContainer: Color(0xFF402120),
   brightness: Brightness.dark, // Brightness of the color scheme
 );

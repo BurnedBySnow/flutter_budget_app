@@ -69,15 +69,23 @@ packages:
     dependency: "direct main"
     description:
       name: fl_chart
-      sha256: f2e9137f261d0f53a820f6b829c80ba570ac915284c8e32789d973834796eca0
+      sha256: "577aeac8ca414c25333334d7c4bb246775234c0e44b38b10a82b559dd4d764e7"
       url: "https://pub.dev"
     source: hosted
-    version: "0.71.0"
+    version: "1.0.0"
   flutter:
     dependency: "direct main"
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_gruvbox_theme:
+    dependency: "direct main"
+    description:
+      name: flutter_gruvbox_theme
+      sha256: e5f616c284dde8999e16d0249df89baab1f94a3820ac14b256a8f8c14f4b249d
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.0+2"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -314,4 +322,4 @@ packages:
     version: "14.3.1"
 sdks:
   dart: ">=3.7.0 <4.0.0"
-  flutter: ">=3.24.0"
+  flutter: ">=3.27.4"
