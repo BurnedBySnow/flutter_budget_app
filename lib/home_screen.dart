@@ -35,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _addTransaction(Transaction transaction) async {
     await _dbHelper.insert(transaction.toMap());
-    if (transaction.recurrence != null) {
+    if (transaction.recurrence != null || transaction.recurrence != 'None') {
       _createRecurringTransaction(transaction);
     }
     _loadTransactions();
