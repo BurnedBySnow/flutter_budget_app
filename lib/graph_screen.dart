@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_budget_app/bar_chart_widget.dart';
 import 'package:flutter_budget_app/database_helper.dart';
+import 'package:flutter_budget_app/line_chart_widget.dart';
 import 'package:flutter_budget_app/transaction.dart';
 import 'package:intl/intl.dart';
 
@@ -13,6 +14,11 @@ class _GraphScreenState extends State<GraphScreen> {
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
   List<Transaction> _transactions = [];
   Map<String, double> _categoryTotals = {};
+  Map<String, double> _monthlyTotals = {};
+  DateTimeRange _selectedDateRange = DateTimeRange(
+    start: DateTime(DateTime.now().year, 1, 1),
+    end: DateTime(DateTime.now().year, 12, 31),
+  );
 
   @override
   void initState() {
@@ -27,6 +33,7 @@ class _GraphScreenState extends State<GraphScreen> {
     setState(() {
       _transactions = transactions;
       _calculateCategoryTotals();
+      _calculateMonthlyTotals();
     });
   }
 
@@ -50,10 +57,44 @@ class _GraphScreenState extends State<GraphScreen> {
     }
   }
 
+  void _calculateMonthlyTotals() {
+    _monthlyTotals.clear();
+
+    List<String> allMonths = [];
+    DateTime current = DateTime(
+      _selectedDateRange.start.year,
+      _selectedDateRange.start.month,
+      1,
+    );
+    while (current.isBefore(_selectedDateRange.end) ||
+        current.isAtSameMomentAs(_selectedDateRange.end)) {
+      allMonths.add(DateFormat('yyyy-MM').format(current));
+      current = DateTime(current.year, current.month + 1, 1);
+    }
+
+    for (String month in allMonths) {
+      _monthlyTotals[month] = 0.0;
+    }
+
+    for (var transaction in _transactions) {
+      if (transaction.date.isAfter(
+            _selectedDateRange.start.subtract(Duration(days: 1)),
+          ) &&
+          transaction.date.isBefore(
+            _selectedDateRange.end.add(Duration(days: 1)),
+          ) && transaction.type == 'Expense') {
+        String monthKey = DateFormat('yyyy-MM').format(transaction.date);
+        if (_monthlyTotals.containsKey(monthKey)) {
+          _monthlyTotals[monthKey] =
+              _monthlyTotals[monthKey]! + transaction.amount;
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 1.4,
+    return Expanded(
       child: Column(
         children: <Widget>[
           Text(DateFormat('MMMM').format(DateTime.now())),
@@ -64,6 +105,16 @@ class _GraphScreenState extends State<GraphScreen> {
               child: Padding(
                 padding: EdgeInsets.only(top: 5, bottom: 5),
                 child: BarChartWidget(categoryTotals: _categoryTotals),
+              ),
+            ),
+          ),
+          Expanded(
+            child: Card(
+              margin: EdgeInsets.all(15),
+              color: Color(0xFF32302f),
+              child: Padding(
+                padding: EdgeInsets.only(top: 5, bottom: 5),
+                child: LineChartWidget(monthlyTotals: _monthlyTotals),
               ),
             ),
           ),
