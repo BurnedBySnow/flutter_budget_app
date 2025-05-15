@@ -25,14 +25,10 @@ class LineChartWidget extends StatelessWidget {
   int _calculateMaxValue(Iterable<double> numbers) {
     double max = numbers.reduce((a, b) => a > b ? a : b);
     int digits = _countDigits(max.toInt());
-    debugPrint(max.toString());
-    debugPrint(digits.toString());
-    debugPrint(pow(10, digits).toString());
     return (max / pow(10,digits)).ceil() * pow(10, digits).toInt();
   }
 
   int _countDigits(int number) {
-    debugPrint(number.toInt().toString());
     return '$number'.length - 1; 
   }
 

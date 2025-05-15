@@ -22,7 +22,6 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   @override
   void initState() {
     super.initState();
-    debugPrint((widget.transaction != null).toString());
     if (widget.transaction != null) {
       _type = widget.transaction!.type;
       _amount = widget.transaction!.amount;

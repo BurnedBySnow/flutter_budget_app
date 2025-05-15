@@ -12,7 +12,19 @@ class PieChartWidget extends StatefulWidget {
 }
 
 class _PieChartWidget extends State<PieChartWidget> {
-  int touchedIndex = 1;
+  int touchedIndex = -1;
+  List<Color> colors = [Color(0xFFa9b665), Color(0xFF7daea3),Color(0xFFea6962),Color(0xFFd8a657),Color(0xFFe78a4e)];
+
+  Map<String, double> getPercentages(Map<String, double> categoryTotals) {
+    double total = 0;
+    if(categoryTotals.isNotEmpty) total = categoryTotals.values.reduce((value, element) => value + element);
+      
+    Map<String, double> percentages = {};
+    for(var entry in widget.categoryTotals.entries) {
+      percentages[entry.key] = entry.value / total * 100;
+    }
+    return percentages;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,10 +55,10 @@ class _PieChartWidget extends State<PieChartWidget> {
     for (var entry in widget.categoryTotals.entries) {
       Indicator indicator = Indicator(
         color:
-            Colors.primaries[widget.categoryTotals.keys.toList().indexOf(
+            colors[widget.categoryTotals.keys.toList().indexOf(
                   entry.key,
                 ) %
-                Colors.primaries.length],
+                colors.length],
         text: entry.key,
         isSquare: true,
       );
@@ -77,6 +89,7 @@ class _PieChartWidget extends State<PieChartWidget> {
   );
 
   List<PieChartSectionData> showingSections() {
+    final Map<String, double> percentages = getPercentages(widget.categoryTotals);
     return widget.categoryTotals.entries.map((entry) {
       final isTouched =
           widget.categoryTotals.keys.toList().indexOf(entry.key) ==
@@ -85,13 +98,13 @@ class _PieChartWidget extends State<PieChartWidget> {
       final radius = isTouched ? 120.0 : 110.0;
       const shadows = [Shadow(color: Colors.black, blurRadius: 2)];
       return PieChartSectionData(
-        value: entry.value,
-        title: isTouched ? entry.value.toString() : entry.key,
+        value: percentages[entry.key],
+        title: isTouched ? '${percentages[entry.key]!.toStringAsFixed(1)}%' : entry.value.toStringAsFixed(1),
         color:
-            Colors.primaries[widget.categoryTotals.keys.toList().indexOf(
+            colors[widget.categoryTotals.keys.toList().indexOf(
                   entry.key,
                 ) %
-                Colors.primaries.length],
+                colors.length],
         radius: radius,
         titleStyle: TextStyle(
           fontSize: fontSize,

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_budget_app/bar_chart_widget.dart';
 import 'package:flutter_budget_app/database_helper.dart';
 import 'package:flutter_budget_app/gruvbox_colors.dart';
 import 'package:flutter_budget_app/line_chart_widget.dart';
@@ -119,8 +118,7 @@ class _GraphScreenState extends State<GraphScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Column(
+      return Column(
         children: <Widget>[
           Text(
             DateFormat('MMMM').format(DateTime.now()),
@@ -137,7 +135,7 @@ class _GraphScreenState extends State<GraphScreen> {
             ),
           ),
           Row(
-            spacing: 10,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               SizedBox(width: 10,),
               IconButton(
@@ -161,7 +159,6 @@ class _GraphScreenState extends State<GraphScreen> {
             ),
           ),
         ],
-      ),
     );
   }
 }
