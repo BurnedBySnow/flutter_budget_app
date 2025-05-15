@@ -88,6 +88,7 @@ class LineChartWidget extends StatelessWidget {
         topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
         bottomTitles: AxisTitles(
           sideTitles: SideTitles(
+            reservedSize: 30,
             showTitles: true,
             getTitlesWidget: bottomTitleWidgets,
           ),

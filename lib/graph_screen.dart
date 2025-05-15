@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_budget_app/bar_chart_widget.dart';
 import 'package:flutter_budget_app/database_helper.dart';
+import 'package:flutter_budget_app/gruvbox_colors.dart';
 import 'package:flutter_budget_app/line_chart_widget.dart';
+import 'package:flutter_budget_app/pie_chart.dart';
 import 'package:flutter_budget_app/transaction.dart';
 import 'package:intl/intl.dart';
 
@@ -82,7 +84,8 @@ class _GraphScreenState extends State<GraphScreen> {
           ) &&
           transaction.date.isBefore(
             _selectedDateRange.end.add(Duration(days: 1)),
-          ) && transaction.type == 'Expense') {
+          ) &&
+          transaction.type == 'Expense') {
         String monthKey = DateFormat('yyyy-MM').format(transaction.date);
         if (_monthlyTotals.containsKey(monthKey)) {
           _monthlyTotals[monthKey] =
@@ -92,21 +95,60 @@ class _GraphScreenState extends State<GraphScreen> {
     }
   }
 
+  Future<void> _selectDateRange(BuildContext context) async {
+    final DateTimeRange? picked = await showDateRangePicker(
+      context: context,
+      initialDateRange: _selectedDateRange,
+      firstDate: DateTime(DateTime.now().year - 5, 1, 1),
+      lastDate: DateTime(DateTime.now().year + 5, 12, 31),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData.dark().copyWith(colorScheme: gruvboxColorScheme),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked != null && picked != _selectedDateRange) {
+      setState(() {
+        _selectedDateRange = picked;
+        _calculateMonthlyTotals();
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: Column(
         children: <Widget>[
-          Text(DateFormat('MMMM').format(DateTime.now())),
+          Text(
+            DateFormat('MMMM').format(DateTime.now()),
+            style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+          ),
           Expanded(
             child: Card(
               margin: EdgeInsets.all(15),
               color: Color(0xFF32302f),
               child: Padding(
                 padding: EdgeInsets.only(top: 5, bottom: 5),
-                child: BarChartWidget(categoryTotals: _categoryTotals),
+                child: PieChartWidget(categoryTotals: _categoryTotals),
               ),
             ),
+          ),
+          Row(
+            spacing: 10,
+            children: [
+              SizedBox(width: 10,),
+              IconButton(
+                icon: Icon(Icons.calendar_today),
+                onPressed: () => _selectDateRange(context),
+              ),
+              Text(
+                '${DateFormat.yMMMd().format(_selectedDateRange.start)}  -  ${DateFormat.yMMMd().format(_selectedDateRange.end)}',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            ],
           ),
           Expanded(
             child: Card(
